@@ -1,0 +1,104 @@
+asyncapi: 2.6.0
+info:
+  title: Notifications Service
+  version: 1.0.0
+  description: >
+    Notification service that consumes payment and shipping events.
+    It listens to accepted payment, rejected payment, and order dispatch events.
+
+servers:
+  rabbitmq:
+    url: amqp://localhost:5672
+    protocol: amqp
+    description: Local RabbitMQ Server
+
+channels:
+  payment.accepted.exchange:
+    subscribe:
+      operationId: paymentAcceptedEventListener
+      summary: Payment Accepted Event
+      description: Notifies that a payment was successfully accepted.
+      message:
+        $ref: '#/components/messages/PaymentAcceptedMessage'
+
+  payment.rejected.exchange:
+    subscribe:
+      operationId: paymentRejectedEventListener
+      summary: Payment Rejected Event
+      description: Notifies that a payment was rejected.
+      message:
+        $ref: '#/components/messages/PaymentRejectedMessage'
+
+  shipping.send.exchange:
+    subscribe:
+      operationId: shippingSendEventListener
+      summary: Order Dispatch Event
+      description: Notifies that an order is ready to be sent (dispatched).
+      message:
+        $ref: '#/components/messages/ShippingSendMessage'
+
+components:
+  messages:
+    PaymentAcceptedMessage:
+      summary: Payload for accepted payment notification.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/PaymentAcceptedPayload'
+
+    PaymentRejectedMessage:
+      summary: Payload for rejected payment notification.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/PaymentRejectedPayload'
+
+    ShippingSendMessage:
+      summary: Payload for order dispatch notification.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ShippingSendPayload'
+
+  schemas:
+    PaymentAcceptedPayload:
+      type: object
+      required:
+        - orderId
+        - amount
+      properties:
+        orderId:
+          type: string
+          description: The ID of the order.
+          example: ORD-741
+        amount:
+          type: number
+          description: The amount of the payment.
+          example: 125.50
+
+    PaymentRejectedPayload:
+      type: object
+      required:
+        - orderId
+        - reason
+      properties:
+        orderId:
+          type: string
+          description: The ID of the order.
+          example: ORD-742
+        reason:
+          type: string
+          description: Reason for the rejection.
+          example: 'Insufficient funds or expired card.'
+
+    ShippingSendPayload:
+      type: object
+      required:
+        - orderId
+        - address
+      properties:
+        orderId:
+          type: string
+          description: The ID of the order.
+          example: ORD-743
+        address:
+          type: string
+          description: The shipping address for delivery.
+          example: '456 Oak Lane, Apt 2A, City, ZIP'
