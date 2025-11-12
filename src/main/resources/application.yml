@@ -42,6 +42,14 @@ spring:
             back-off-initial-interval: 1000
             back-off-max-interval: 10000
         shippingSendEventListener-in-0:
+          destination: report.send.exchange
+          content-type: application/json
+          group: notification-service-group
+          consumer:
+            max-attempts: 3
+            back-off-initial-interval: 1000
+            back-off-max-interval: 10000
+        reportSend-out-0:
           destination: shipping.send.exchange
           content-type: application/json
           group: notification-service-group
