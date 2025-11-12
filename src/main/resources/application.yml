@@ -22,7 +22,7 @@ spring:
     password: guest
   cloud:
     function:
-      definition: paymentAcceptedEventListener;paymentRejectedEventListener;shippingSendEventListener
+      definition: paymentAcceptedEventListener;paymentRejectedEventListener;shippingSendEventListener;reportSendEventListener
     stream:
       bindings:
         paymentAcceptedEventListener-in-0:
@@ -42,14 +42,6 @@ spring:
             back-off-initial-interval: 1000
             back-off-max-interval: 10000
         shippingSendEventListener-in-0:
-          destination: report.send.exchange
-          content-type: application/json
-          group: notification-service-group
-          consumer:
-            max-attempts: 3
-            back-off-initial-interval: 1000
-            back-off-max-interval: 10000
-        reportSend-out-0:
           destination: shipping.send.exchange
           content-type: application/json
           group: notification-service-group
@@ -57,6 +49,10 @@ spring:
             max-attempts: 3
             back-off-initial-interval: 1000
             back-off-max-interval: 10000
+        reportSendEventListener-in-0:
+          destination: report.send.exchange
+          content-type: application/json
+          group: notification-service-group
   management:
     endpoints:
       web:
